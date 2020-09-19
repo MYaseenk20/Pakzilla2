@@ -1,0 +1,147 @@
+{% extends 'app/base.html' %}
+{% block content %}
+{% load static %}
+
+<div id="content-wrapper">
+
+
+		<div class="column">
+			<img id=featured src="{{product.ImageUrl}}">
+
+			<div id="slide-wrapper" >
+				<img id="slideLeft" class="arrow" src="{% static 'images/arrow-left.png' %}">
+
+				<div id="slider" style="overflow: hidden;">
+                        <img class="thumbnail" src="{{product.image.url}}">
+					{% if product.image2 %}
+                        <img class="thumbnail" src="{{product.image2.url}}">
+					{% endif %}
+
+  					{% if product.image3 %}
+                        <img class="thumbnail" src="{{product.image3.url}}">
+					{% endif %}
+
+                    {% if product.image4 %}
+                        <img class="thumbnail" src="{{product.image4.url}}">
+					{% endif %}
+
+                    {% if product.image5 %}
+                        <img class="thumbnail" src="{{product.image5.url}}">
+					{% endif %}
+				</div>
+
+				<img id="slideRight" class="arrow" src="{% static 'images/arrow-right.png' %}">
+			</div>
+		</div>
+        <div class="col-lg-5 offset-lg-1">
+			<div class="s_product_text">
+			  <h3>{{product.name}}</h3>
+			  <h2>${{product.price}}</h2>
+			  <ul class="list">
+				<li>
+				  <a class="active" href="#">
+					<span>Category</span> : {{product.categorys}}</a>
+				</li>
+				<li>
+				  <a href="#"> <span>Availibility</span> : In Stock</a>
+				</li>
+			  </ul>
+			  <p>
+                  {{product.description}}
+			  </p>
+			  <div class="card_area">
+				<div class="add_to_cart">
+                    <a href="#" data-product="{{product.id}}" data-action="add" class="update-cart btn_3" style=" ">add to cart</a>
+
+				</div>
+				<div class="social_icon">
+					<a href="#" class="fb"><i class="ti-facebook"></i></a>
+					<a href="#" class="tw"><i class="ti-twitter-alt"></i></a>
+					<a href="#" class="li"><i class="ti-linkedin"></i></a>
+				</div>
+			  </div>
+			</div>
+		  </div>
+
+	</div>
+
+
+
+	
+  <!-- product_list part start-->
+  <section class="product_list best_seller padding_bottom">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="section_tittle text-center">
+            <h2>Best Sellers</h2>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+          {% for bestseller in products %}
+          {% if bestseller.bestseller == True %}
+          <div class="col-lg-3 col-sm-6">
+              <div class="single_category_product">
+                  <div class="single_category_img">
+                      <img src="{{bestseller.ImageUrl}}" alt="">
+                      <div class="category_social_icon">
+                          <ul>
+                              <li><a href="#"  data-product="{{product.id}}" data-action="add" class="update-cart"><i class="ti-bag"></i></a></li>
+                          </ul>
+                      </div>
+                      <div class="category_product_text">
+                          <a href="{% url 'Product' product.id%}"><h5>{{bestseller.name}}</h5></a>
+                          <p>${{bestseller.price}}</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+      </div>
+    </div>
+  </section>
+  <!-- product_list part end-->
+
+	<script type="text/javascript">
+		let thumbnails = document.getElementsByClassName('thumbnail')
+
+		let activeImages = document.getElementsByClassName('active')
+
+		for (var i=0; i < thumbnails.length; i++){
+
+			thumbnails[i].addEventListener('mouseover', function(){
+				console.log(activeImages)
+
+				if (activeImages.length > 0){
+					activeImages[0].classList.remove('active')
+				}
+
+
+				this.classList.add('active')
+				document.getElementById('featured').src = this.src
+			})
+		}
+
+
+		let buttonRight = document.getElementById('slideRight');
+		let buttonLeft = document.getElementById('slideLeft');
+
+		buttonLeft.addEventListener('click', function(){
+			document.getElementById('slider').scrollLeft -= 180
+		})
+
+		buttonRight.addEventListener('click', function(){
+			document.getElementById('slider').scrollLeft += 180
+		})
+
+
+	</script>
+
+
+
+
+
+
+{% endblock content %}

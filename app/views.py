@@ -1,18 +1,30 @@
-from django.shortcuts import render
-from .models import Product,Order,OrderItem,shippingaddress,Customer,Orderconfirmed
+from django.shortcuts import render,redirect
+from .models import Product,Order,OrderItem,shippingaddress,Customer,Orderconfirmed,Categorys,Contact
 from django.http import JsonResponse
 import datetime
 import json
 from .utils import cookieCart,Viewdata
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import login,logout,authenticate
+
 # Create your views here.
 def home(request):
-    products = Product.objects.all()
+    products = None
+
+    categorys=Categorys.objects.all()
+    categoryID=request.GET.get('category')
+    if categoryID:
+        products = Product.objects.filter(categorys=categoryID)
+    else:
+        products = Product.objects.all()
+
     viewdata=Viewdata(request)
     orderitem=viewdata['orderitem']
     items=viewdata['items']
     orders=viewdata['orders']
 
-    context={'products':products,'orderitem':orderitem,'items':items,'orders':orders}
+    context={'products':products,'orderitem':orderitem,'items':items,'orders':orders,'categorys':categorys}
     return render(request,'app/store.html',context)
 def cart(request):
     viewdata = Viewdata(request)
@@ -120,3 +132,93 @@ def CheckOut(request):
 
 
     return JsonResponse('Order Submitted',safe=False)
+
+#
+def category(request):
+    products = None
+    viewdata=Viewdata(request)
+    orderitem=viewdata['orderitem']
+
+    categorys=Categorys.objects.all()
+    categoryID=request.GET.get('category')
+    if categoryID:
+        products = Product.objects.filter(categorys=categoryID)
+    else:
+        products = Product.objects.all()
+    context={'categorys':categorys,'products':products,'orderitem':orderitem}
+    return render(request,'app/category.html',context)
+
+
+
+
+def ProductDetail(request,pk):
+    product=Product.objects.get(id=pk)
+    products=Product.objects.all()
+    viewdata=Viewdata(request)
+    orderitem=viewdata['orderitem']
+    context={'orderitem':orderitem,'product':product,'products':products}
+    return render(request,'app/product.html',context)
+
+
+def Search(request):
+    qureyset_list=Product.objects.all()
+    if 'Search' in request.GET:
+        Search=request.GET['Search']
+        if Search:
+            qureyset_list=qureyset_list.filter(name__icontains=Search)
+    viewdata=Viewdata(request)
+    orderitem=viewdata['orderitem']
+    context={'orderitem':orderitem,'qureyset_list':qureyset_list}
+    return render(request,'app/Search.html',context)
+
+def Contact(request):
+    if request.method == 'POST':
+        message=request.POST.get('message')
+        name=request.POST.get('name')
+        email=request.POST.get('email')
+        subject=request.POST.get('subject')
+        print(message)
+        print(name)
+        print(email)
+        print(subject)
+        Contact.objects.create(message=message,name=name,Email=email,subject=subject)
+        return redirect('store')
+    return render(request,'app/contact.html')
+def Signup(request):
+    if request.method == 'POST':
+        username=request.POST.get('username')
+        first_name=request.POST.get('first_name')
+        last_name=request.POST.get('last_name')
+        email=request.POST.get('email')
+        password1=request.POST.get('password1')
+        password2=request.POST.get('password2')
+        if password1 == password2:
+            if User.objects.filter(username=username).exists():
+                messages.error(request,'This username is already taken')
+                return redirect('signup')
+            else:
+                if User.objects.filter(email=email).exists():
+                    messages.error(request,'This email is already taken')
+                    return redirect('signup')
+                else:
+                    user=User.objects.create_user(username=username,email=email,password=password1)
+                    user.save()
+                    return redirect('login')
+                    messages.success(request,'Your account Has been created ')
+
+        return redirect('store')
+    return render(request,'app/signup.html')
+
+def loginuser(request):
+    if request.method == 'POST':
+        username=request.POST['username']
+        password=request.POST['password']
+        print(username)
+        user=authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('store')
+
+    return render(request,'app/login.html')
+
+

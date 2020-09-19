@@ -1,49 +1,88 @@
 {% extends 'app/base.html' %}
 {% block content  %}
 {% load static %}
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="box-element">
+  <section class="cart_area section_padding">
+    <div class="container">
+      <div class="cart_inner">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="d-flex">
+                      <img src="{{item.product.ImageUrl}}" alt="" />
+                    </div>
+                    <div class="media-body">
+                      <p>{{item.product.name}}</p>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <h5>${{item.product.price}}</h5>
+                </td>
+                <td>
+                  <div class="product_count">
+                    <!-- <input type="text" value="1" min="0" max="10" title="Quantity:"
+                      class="input-text qty input-number" />
+                    <button
+                      class="increase input-number-increment items-count" type="button">
+                      <i class="ti-angle-up"></i>
+                    </button>
+                    <button
+                      class="reduced input-number-decrement items-count" type="button">
+                      <i class="ti-angle-down"></i>
+                    </button> -->
+                    <a data-product="{{item.product.id}}" data-action="remove" class="update-cart input-number-decrement" > <i class="ti-minus"></i></a>
+                    <input class="input-number" type="text" value="{{item.quantity}}" disabled>
+                    <a data-product="{{item.product.id}}" data-action="add" class="update-cart input-number-increment" > <i class="ti-plus"></i></a>
 
-				<a  class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+                  </div>
+                </td>
+                <td>
+                  <h5>${{item.Total_of_item}}</h5>
+                </td>
+              </tr>
+              {% endfor %}
 
-				<br>
-				<br>
-				<table class="table">
-					<tr>
-						<th><h5>Items: <strong>{{orders.get_cart_item}}</strong></h5></th>
-						<th><h5>Total:<strong> ${{orders.get_cart_total}}</strong></h5></th>
-						<th>
-							<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
-						</th>
-					</tr>
-				</table>
+              <tr>
+                <td></td>
+                <td></td>
+                <td>
+                  <h5>Subtotal</h5>
+                </td>
+                <td>
+                  <h5>${{orders.get_cart_total}}</h5>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="checkout_btn_inner float-right">
+            <a class="btn_1" href="{% url 'store' %}">Continue Shopping</a>
+            <a class="btn_1 checkout_btn_1" href="{% url 'checkout' %}">Proceed to checkout</a>
+          </div>
+        </div>
+      </div>
+  </section>
 
-			</div>
 
-			<br>
-<div class="box-element">
-	<div class="cart-row">
-		<div style="flex:2"></div>
-		<div style="flex:2"><strong>Item</strong></div>
-		<div style="flex:1"><strong>Price</strong></div>
-		<div style="flex:1"><strong>Quantity</strong></div>
-		<div style="flex:1"><strong>Total</strong></div>
-	</div>
 
-	{% for item in items %}
-	<div class="cart-row">
-		<div style="flex:2"><img class="row-image" src="{{item.product.ImageUrl}}"></div>
-		<div style="flex:2"><p>{{item.product.name}}</p></div>
-		<div style="flex:1"><p>${{item.product.price}}</p></div>
-		<div style="flex:1">
-			<p class="quantity">{{item.quantity}}</p>
-			<div class="quantity">
-				<img data-product="{{item.product.id}}" data-action="add" class="update-cart chg-quantity" src="{% static  'image/arrow-up.png' %}">
-				<img data-product="{{item.product.id}}" data-action="remove" class="update-cart chg-quantity" src="{% static  'image/arrow-down.png' %}">
-			</div>
-		</div>
-		<div style="flex:1"><p>${{item.Total_of_item}}</p></div>
-	</div>
-	{% endfor %}
+
+
+
+
+
+
+
+
+
 {% endblock content %}

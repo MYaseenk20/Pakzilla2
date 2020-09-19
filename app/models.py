@@ -8,11 +8,27 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
+
+class Categorys(models.Model):
+    name=models.CharField(max_length=200,null=True)
+    def __str__(self):
+        return self.name
 class Product(models.Model):
     name=models.CharField(max_length=200,null=True,blank=True)
+    categorys = models.ForeignKey(Categorys, on_delete=models.CASCADE, default=None,null=True, blank=True)
     price=models.FloatField(null=True)
     image=models.ImageField(null=True,blank=True)
+    image=models.ImageField(null=True,blank=True)
+    image1=models.ImageField(null=True,blank=True)
+    image2=models.ImageField(null=True,blank=True)
+    image3=models.ImageField(null=True,blank=True)
+    image4=models.ImageField(null=True,blank=True)
+    image5=models.ImageField(null=True,blank=True)
     digital=models.BooleanField(default=False,null=False,blank=False)
+    newarrival=models.BooleanField(default=False,null=False,blank=False)
+    bestseller=models.BooleanField(default=False,null=False,blank=False)
+    description=models.TextField(null=True,blank=True)
+
     def __str__(self):
         return self.name
     @property
@@ -79,3 +95,19 @@ class Orderconfirmed(models.Model):
     order=models.ForeignKey(Order,on_delete=models.CASCADE,null=True,blank=True)
     quantity=models.IntegerField(default=0,null=True,blank=True)
     date_added=models.DateTimeField(auto_now_add=True)
+
+
+class Contact(models.Model):
+    message=models.TextField(null=True,blank=True)
+    name=models.CharField(max_length=200,null=True)
+    Email=models.CharField(max_length=200,null=True)
+    subject=models.CharField(max_length=200,null=True)
+    def __str__(self):
+        return self.name
+class Car(models.Model):
+    message=models.TextField(null=True,blank=True)
+    name=models.CharField(max_length=200,null=True)
+    Email=models.CharField(max_length=200,null=True)
+    subject=models.CharField(max_length=200,null=True)
+    def __str__(self):
+        return self.name
