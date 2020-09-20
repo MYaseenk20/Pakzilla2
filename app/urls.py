@@ -13,6 +13,7 @@ urlpatterns = [
     path('Search/', views.Search, name='Search'),
     path('signup/', views.Signup, name='signup'),
     path('login/', views.loginuser, name='login'),
+    path('logout/', views.logoutuser, name='logout'),
 
     # path('Contact/', views.Contact, name='Contact'),
 ]

@@ -36,11 +36,12 @@ def cart(request):
 
     return render(request,'app/cart.html',context)
 def checkout(request):
+    categorys=Categorys.objects.all()
     viewdata=Viewdata(request)
     orderitem=viewdata['orderitem']
     items=viewdata['items']
     orders=viewdata['orders']
-    context={'items':items,'orders':orders,'orderitem':orderitem}
+    context={'items':items,'orders':orders,'orderitem':orderitem,'categorys':categorys}
     return render(request,'app/checkout.html',context)
 
 def update_item(request):
@@ -71,7 +72,6 @@ def update_item(request):
 def CheckOut(request):
     transaction_id=datetime.datetime.now().timestamp()
     data=json.loads(request.body)
-
     if request.user.is_authenticated:
         customer=request.user.customer
         order,create=Order.objects.get_or_create(customer=customer,complete=False)
@@ -85,6 +85,7 @@ def CheckOut(request):
             )
 
     else:
+        print('hello world')
         print('Cookies',request.COOKIES)
         name=data['form']['name']
         email=data['form']['email']
@@ -93,7 +94,6 @@ def CheckOut(request):
         items=viewdata['items']
         customer,create=Customer.objects.get_or_create(
             email=email,
-            name=name,
         )
         customer.name=name
         customer.save()
@@ -152,15 +152,17 @@ def category(request):
 
 
 def ProductDetail(request,pk):
+    categorys=Categorys.objects.all()
     product=Product.objects.get(id=pk)
     products=Product.objects.all()
     viewdata=Viewdata(request)
     orderitem=viewdata['orderitem']
-    context={'orderitem':orderitem,'product':product,'products':products}
+    context={'orderitem':orderitem,'product':product,'products':products,'categorys':categorys}
     return render(request,'app/product.html',context)
 
 
 def Search(request):
+    categorys=Categorys.objects.all()
     qureyset_list=Product.objects.all()
     if 'Search' in request.GET:
         Search=request.GET['Search']
@@ -168,7 +170,7 @@ def Search(request):
             qureyset_list=qureyset_list.filter(name__icontains=Search)
     viewdata=Viewdata(request)
     orderitem=viewdata['orderitem']
-    context={'orderitem':orderitem,'qureyset_list':qureyset_list}
+    context={'orderitem':orderitem,'qureyset_list':qureyset_list,'categorys':categorys}
     return render(request,'app/Search.html',context)
 
 def Contact(request):
@@ -185,6 +187,7 @@ def Contact(request):
         return redirect('store')
     return render(request,'app/contact.html')
 def Signup(request):
+    categorys=Categorys.objects.all()
     if request.method == 'POST':
         username=request.POST.get('username')
         first_name=request.POST.get('first_name')
@@ -207,9 +210,14 @@ def Signup(request):
                     messages.success(request,'Your account Has been created ')
 
         return redirect('store')
-    return render(request,'app/signup.html')
+    viewdata=Viewdata(request)
+    orderitem=viewdata['orderitem']
+    return render(request,'app/signup.html',{'orderitem':orderitem,'categorys':categorys})
 
 def loginuser(request):
+    categorys=Categorys.objects.all()
+    viewdata=Viewdata(request)
+    orderitem=viewdata['orderitem']
     if request.method == 'POST':
         username=request.POST['username']
         password=request.POST['password']
@@ -218,7 +226,8 @@ def loginuser(request):
         if user is not None:
             login(request,user)
             return redirect('store')
+    return render(request,'app/login.html',{'orderitem':orderitem,'categorys':categorys})
 
-    return render(request,'app/login.html')
-
-
+def logoutuser(request):
+    logout(request)
+    return redirect('login')
